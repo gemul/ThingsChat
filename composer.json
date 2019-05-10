@@ -1,0 +1,12 @@
+{
+    "name":"Things Chat",
+    "description":"Websocket chat for things",
+    "autoload": {
+        "psr-4": {
+            "Wsrt\\": "src"
+        }
+    },
+    "require": {
+        "cboden/ratchet": "^0.4.1"
+    }
+}
