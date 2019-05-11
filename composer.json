@@ -1,6 +1,22 @@
 {
-    "name":"Things Chat",
+    "name":"gemul/thingschat",
     "description":"Websocket chat for things",
+    "keywords": [
+        "websocket",
+        "iot",
+        "things",
+        "php"
+    ],
+    "homepage": "https://asudahlah.com",
+    "license": "GPL3",
+    "authors": [
+        {
+            "name": "Jordi Boggiano",
+            "email": "j.boggiano@seld.be",
+            "homepage": "http://seld.be",
+            "role": "Developer"
+        }
+    ],
     "autoload": {
         "psr-4": {
             "ThingsChat\\": "src"
