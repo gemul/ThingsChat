@@ -1,13 +1,30 @@
 <?php
-namespace Wsrt;
+namespace ThingsChat;
 
 use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
+use ThingsChat\Entry;
 
+/**
+ * Chat class
+ * 
+ * @author Gema Ulama Putra <gemul.putra@email.com>
+ * 
+ */
 class Chat implements MessageComponentInterface {
 
+    /**
+     * clients array
+     *
+     * @var Array
+     */
     protected $clients;
-    
+
+    /**
+     * Constructor
+     * 
+     * @return void
+     */
     public function __construct() {
         $this->clients = new \SplObjectStorage;
     }
@@ -17,7 +34,7 @@ class Chat implements MessageComponentInterface {
      *
      * @param ConnectionInterface   $conn connection interface
      * 
-     * @author Gema Ulama Putra <gemul.putra@gmail.com>
+     * @return void
      */
     public function onOpen(ConnectionInterface $conn) {
         // Store the new connection to send messages to later
@@ -32,19 +49,33 @@ class Chat implements MessageComponentInterface {
      * @param ConnectionInterface   $from connection interface
      * @param String   $msg message
      * 
-     * @author Gema Ulama Putra <gemul.putra@gmail.com>
+     * @return void
      */
     public function onMessage(ConnectionInterface $from, $msg) {
-        $numRecv = count($this->clients) - 1;
-        echo sprintf('Connection %d sending message "%s" to %d other connection%s' . "\n"
-            , $from->resourceId, $msg, $numRecv, $numRecv == 1 ? '' : 's');
+        $clientCount = count($this->clients);
+        echo sprintf( 'Client %d from %d connections sending message "%s". Forwarded to Entry Point Receiver' . "\n"
+            , $from->resourceId, $clientCount, $msg);
 
-        foreach ($this->clients as $client) {
-            if ($from !== $client) {
-                // The sender is not the receiver, send to each client connected
-                $client->send($msg);
+        $entryPoint = new Entry();
+        $response = $entryPoint->Receiver($msg);
+
+        if($entryPoint->transmitMode=="single"){
+            //this client
+            $from->send($response);
+        }elseif($entryPoint->transmitMode == "broadcast") {
+            //all connected client
+            foreach ($this->clients as $client) {
+                $client->send($response);
+            }
+        }elseif($entryPoint->transmitMode == "other") {
+            //all except this client
+            foreach ($this->clients as $client) {
+                if ($from !== $client) {
+                    $client->send($response);
+                }
             }
         }
+
     }
 
     /**
@@ -52,7 +83,7 @@ class Chat implements MessageComponentInterface {
      *
      * @param ConnectionInterface   $conn connection interface
      * 
-     * @author Gema Ulama Putra <gemul.putra@gmail.com>
+     * @return void
      */
     public function onClose(ConnectionInterface $conn) {
         // The connection is closed, remove it, as we can no longer send it messages
@@ -67,7 +98,7 @@ class Chat implements MessageComponentInterface {
      * @param ConnectionInterface   $conn connection interface
      * @param \Exception   $e exception
      * 
-     * @author Gema Ulama Putra <gemul.putra@gmail.com>
+     * @return void
      */
     public function onError(ConnectionInterface $conn, \Exception $e) {
         echo "An error has occurred: {$e->getMessage()}\n";

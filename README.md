@@ -1,2 +1,2 @@
 # ThingsChat
-Websocket chat for things[wip]
+Websocket chat interface for things[wip]

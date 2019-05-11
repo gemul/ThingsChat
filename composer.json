@@ -3,7 +3,7 @@
     "description":"Websocket chat for things",
     "autoload": {
         "psr-4": {
-            "Wsrt\\": "src"
+            "ThingsChat\\": "src"
         }
     },
     "require": {
